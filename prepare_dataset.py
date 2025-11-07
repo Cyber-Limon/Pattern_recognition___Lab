@@ -6,7 +6,11 @@ from collections import Counter
 
 
 dataset_path = 'dataset'
-img_size = (224, 224)
+img_size = (200, 200)
+id_classes = {'A1':   0, 'A2':   1, 'A3':   2, 'A4':   3, 'A5':   4,
+              'A6':   5, 'A7':   6, 'A8':   7, 'A9':   8, 'A10':  9,
+              'A11': 10, 'A12': 11, 'A13': 12, 'A14': 13, 'A15': 14,
+              'A16': 15, 'A17': 16, 'A18': 17, 'A19': 18, 'A20': 19}
 
 def get_train_test_image():
     imagesets_path = os.path.join(dataset_path, 'ImageSets', 'Main')
@@ -66,6 +70,14 @@ def get_labels_for_files(annotation_path, list_image):
     return labels
 
 
+def get_id_classes():
+    return id_classes
+
+
+def get_size():
+    return img_size
+
+
 def prepare_dataset():
     train_image, test_image = get_train_test_image()
 
@@ -77,9 +89,6 @@ def prepare_dataset():
     y_train = get_labels_for_files(annotations_path, train_image)
     y_test = get_labels_for_files(annotations_path, test_image)
 
-    classes = list(set(y_train + y_test))
-    id_classes = {cls: idx for idx, cls in enumerate(classes)}
-
     y_train_ids = [id_classes[cls] for cls in y_train]
     y_test_ids = [id_classes[cls] for cls in y_test]
 
@@ -89,6 +98,6 @@ def prepare_dataset():
     print(f"Подготовленные данные:")
     print(f"- Train: {len(x_train)} изображений")
     print(f"- Test: {len(x_test)} изображений")
-    print(f"- Классы: {classes}")
+    print(f"- Классы: {list(id_classes)}")
 
     return (x_train, np.array(y_train_ids)), (x_test, np.array(y_test_ids)), id_classes
