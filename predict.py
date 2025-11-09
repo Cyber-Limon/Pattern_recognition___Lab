@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from classes import get_id_classes, get_size
+from classes import id_classes, img_size
 
 
 def load_model():
@@ -21,7 +21,7 @@ def load_image(image_path):
         return False
 
     image = cv2.imread(image_path)
-    image = cv2.resize(image, get_size())
+    image = cv2.resize(image, img_size)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = image / 255.0
     image = np.expand_dims(image, axis=0)
@@ -38,7 +38,7 @@ def predict_aircraft(model, image_path, confidence=0.7):
         return "Самолет не обнаружен", np.max(predictions[0]), image[0]
 
     class_name = None
-    for name, idx in get_id_classes().items():
+    for name, idx in id_classes().items():
         if idx == class_id:
             class_name = name
             break

@@ -1,11 +1,3 @@
-def get_id_classes():
-    return id_classes
-
-
-def get_size():
-    return img_size
-
-
 img_size = (450, 450)
 
 id_classes = {'A1':   0, 'A2':   1, 'A3':   2, 'A4':   3, 'A5':   4,

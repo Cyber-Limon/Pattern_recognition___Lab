@@ -3,12 +3,10 @@ import cv2
 import numpy as np
 from collections import Counter
 import xml.etree.ElementTree as et
-from classes import get_id_classes, get_size
+from classes import id_classes, img_size
 
 
 dataset_path = 'dataset'
-img_size = get_size()
-id_classes = get_id_classes()
 
 
 def get_train_test_image():

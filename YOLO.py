@@ -1,13 +1,10 @@
 from tensorflow.keras import layers, Model
-from classes import get_id_classes, get_size
+from classes import id_classes, img_size
+from prepare_yolo import grid_size, num_anchors
 
 
-input_shape = (*get_size(), 3)
-num_classes = len(get_id_classes())
-
-
-grid_size = (14, 14)
-num_anchors = 3
+input_shape = (*img_size, 3)
+num_classes = len(id_classes())
 
 
 def yolo():
