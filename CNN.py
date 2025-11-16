@@ -1,9 +1,8 @@
 from tensorflow.keras import layers, models
-from classes import id_classes, img_size
+from classes import num_classes, img_size
 
 
 input_shape=(*img_size, 3)
-num_classes = len(id_classes())
 
 
 def cnn():

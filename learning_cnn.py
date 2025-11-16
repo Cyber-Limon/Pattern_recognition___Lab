@@ -1,4 +1,3 @@
-import tensorflow as tf
 from CNN import cnn
 from prepare_cnn import prepare_dataset
 from check_dataset import download_dataset, check_dataset
