@@ -7,6 +7,8 @@ from prepare_yolo import grid_size, num_anchors
 from classes import id_classes, img_size
 from evaluate_yolo import thresholds
 from learning_yolo import loss
+from evaluate_yolo import evaluate
+from prepare_yolo import prepare_yolo_dataset, grid_size
 
 
 def load_model():
@@ -148,6 +150,10 @@ def predict_yolo(model, image_path, confidence):
 
 def main():
     model = load_model()
+
+    (x_train, y_train), (x_test, y_test) = prepare_yolo_dataset()
+    evaluate(model=model, test_images=x_test, test_true_boxes=y_test)
+
     if model is None:
         print("--- Модель не найдена ---")
         return
