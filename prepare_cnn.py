@@ -6,11 +6,8 @@ import xml.etree.ElementTree as et
 from classes import id_classes, img_size
 
 
-dataset_path = 'dataset'
-
-
 def get_train_test_image():
-    imagesets_path = os.path.join(dataset_path, 'ImageSets', 'Main')
+    imagesets_path = os.path.join('dataset', 'ImageSets', 'Main')
 
     with open(os.path.join(imagesets_path, 'test.txt'), 'r') as f:
         train_image = [line.strip() for line in f.readlines()]
@@ -22,7 +19,7 @@ def get_train_test_image():
 
 def load_images(list_image):
     images = []
-    jpegimages_path = os.path.join(dataset_path, 'JPEGImages')
+    jpegimages_path = os.path.join('dataset', 'JPEGImages')
 
     for image_name in list_image:
         image_path = os.path.join(jpegimages_path, f"{image_name}.jpg")
@@ -73,7 +70,7 @@ def prepare_dataset():
     x_train = load_images(train_image)
     x_test = load_images(test_image)
 
-    annotations_path = os.path.join(dataset_path, 'Annotations', 'Horizontal Bounding Boxes')
+    annotations_path = os.path.join('dataset', 'Annotations', 'Horizontal Bounding Boxes')
 
     y_train = get_labels_for_files(annotations_path, train_image)
     y_test = get_labels_for_files(annotations_path, test_image)

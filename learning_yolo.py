@@ -42,7 +42,7 @@ def yolo_loss(y_true, y_pred):
     noobj_mask = 1 - obj_mask
 
     xy_loss = tf.reduce_sum(obj_mask * tf.square(true_xy - pred_xy))
-    wh_loss = tf.reduce_sum(obj_mask * tf.square(tf.sqrt(max(true_wh, 1e-8)) - tf.sqrt(max(pred_wh, 1e-8))))
+    wh_loss = tf.reduce_sum(obj_mask * tf.square(tf.sqrt(tf.maximum(true_wh, 1e-8)) - tf.sqrt(tf.maximum(pred_wh, 1e-8))))
     obj_conf_loss = tf.reduce_sum(obj_mask * tf.square(true_conf - pred_conf))
     noobj_conf_loss = tf.reduce_sum(noobj_mask * tf.square(true_conf - pred_conf))
     class_loss = tf.reduce_sum(obj_mask * tf.square(true_class - pred_class))
@@ -67,7 +67,7 @@ def main():
     model = yolo()
     model.compile(optimizer='adam', loss=yolo_loss)
     model.summary()
-    model.fit(x_train, y_train, batch_size=10, epochs=7, validation_split=0.2)
+    model.fit(x_train, y_train, batch_size=10, epochs=100, validation_split=0.2)
     model.evaluate(x_test, y_test)
     evaluate(model=model, test_images=x_test, test_true_boxes=y_test)
 

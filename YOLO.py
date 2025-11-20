@@ -6,6 +6,26 @@ from prepare_yolo import grid_size, num_anchors
 input_shape = (*img_size, 3)
 
 
+def residual_block(x, filters):
+    shortcut = x
+
+    if shortcut.shape[-1] != filters:
+        shortcut = layers.Conv2D(filters, 1, padding='same', use_bias=False)(shortcut)
+        shortcut = layers.BatchNormalization()(shortcut)
+
+    x = layers.Conv2D(filters, 3, padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.LeakyReLU(alpha=0.1)(x)
+
+    x = layers.Conv2D(filters, 3, padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+
+    x = layers.Add()([x, shortcut])
+    x = layers.LeakyReLU(alpha=0.1)(x)
+
+    return x
+
+
 def yolo():
     inputs = layers.Input(shape=input_shape)
 
@@ -19,14 +39,10 @@ def yolo():
     x = layers.LeakyReLU(alpha=0.1)(x)
     x = layers.MaxPooling2D(2)(x)
 
-    x = layers.Conv2D(256, 3, padding='same', use_bias=False)(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.LeakyReLU(alpha=0.1)(x)
+    x = residual_block(x, 256)
     x = layers.MaxPooling2D(2)(x)
 
-    x = layers.Conv2D(512, 3, padding='same', use_bias=False)(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.LeakyReLU(alpha=0.1)(x)
+    x = residual_block(x, 512)
     x = layers.MaxPooling2D(2)(x)
 
     x = layers.Conv2D(1024, 3, padding='same', use_bias=False)(x)

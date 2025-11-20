@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 from prepare_yolo import grid_size, num_anchors
 from classes import id_classes, img_size
 from evaluate_yolo import thresholds
-from learning_yolo import loss
+from learning_yolo import loss, yolo_loss
 from evaluate_yolo import evaluate
 from prepare_yolo import prepare_yolo_dataset, grid_size
 
 
 def load_model():
     try:
-        model = tf.keras.models.load_model('yolo_model.keras', custom_objects={'loss': loss})
+        model = tf.keras.models.load_model('yolo_model.keras', custom_objects={'yolo_loss': yolo_loss})
         return model
     except Exception as e:
         print(f"Ошибка загрузки модели: {e}")
@@ -35,9 +35,11 @@ def load_image(image_path):
     return original_image, processed_image
 
 
-def extract_predictions(yolo_output, confidence_threshold):
+def extract_predictions(yolo_output, confidence_threshold, size):
     grid_h, grid_w = grid_size
     yolo_reshaped = yolo_output.reshape(grid_h, grid_w, num_anchors, 25)
+
+    original_width, original_height = size
 
     detections = []
 
@@ -53,20 +55,20 @@ def extract_predictions(yolo_output, confidence_threshold):
 
                 x_center, y_center, width, height = data[0:4]
 
-                x_center_abs = (x_center + j) / grid_w * img_size[0]
-                y_center_abs = (y_center + i) / grid_h * img_size[1]
-                width_abs = width * img_size[0]
-                height_abs = height * img_size[1]
+                x_center_abs = (x_center + j) / grid_w * original_width
+                y_center_abs = (y_center + i) / grid_h * original_height
+                width_abs = width * original_width
+                height_abs = height * original_height
 
                 x1 = int(x_center_abs - width_abs / 2)
                 y1 = int(y_center_abs - height_abs / 2)
                 x2 = int(x_center_abs + width_abs / 2)
                 y2 = int(y_center_abs + height_abs / 2)
 
-                x1 = max(0, min(x1, img_size[0] - 1))
-                y1 = max(0, min(y1, img_size[1] - 1))
-                x2 = max(0, min(x2, img_size[0] - 1))
-                y2 = max(0, min(y2, img_size[1] - 1))
+                x1 = max(0, min(x1, original_width - 1))
+                y1 = max(0, min(y1, original_height - 1))
+                x2 = max(0, min(x2, original_width - 1))
+                y2 = max(0, min(y2, original_height - 1))
 
                 class_probs = data[5:25]
                 class_id = np.argmax(class_probs)
@@ -98,12 +100,12 @@ def draw_boxes(image, detections):
         class_name = detection['class_name']
         confidence = detection['confidence']
 
-        cv2.rectangle(image_with_boxes, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 0, 255), 2)
+        cv2.rectangle(image_with_boxes, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (255, 0, 0), 2)
 
         text = f"{class_name}: {confidence:.3f}"
         text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)[0]
 
-        cv2.rectangle(image_with_boxes, (bbox[0], bbox[1] - text_size[1] - 5), (bbox[0] + text_size[0], bbox[1]), (0, 0, 255), -1)
+        cv2.rectangle(image_with_boxes, (bbox[0], bbox[1] - text_size[1] - 5), (bbox[0] + text_size[0], bbox[1]), (255, 0, 0), -1)
 
         cv2.putText(image_with_boxes, text, (bbox[0], bbox[1] - 5),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
@@ -137,11 +139,12 @@ def predict_yolo(model, image_path, confidence):
         return "Ошибка загрузки", 0, None
 
     original_image, processed_image = result
+    size = (original_image.shape[1], original_image.shape[0])
 
     predictions = model.predict(processed_image, verbose=0)
     yolo_output = predictions[0]
 
-    detections = extract_predictions(yolo_output, confidence)
+    detections = extract_predictions(yolo_output, confidence, size)
 
     image_with_boxes = draw_boxes(original_image, detections)
 
@@ -152,7 +155,7 @@ def main():
     model = load_model()
 
     (x_train, y_train), (x_test, y_test) = prepare_yolo_dataset()
-    evaluate(model=model, test_images=x_test, test_true_boxes=y_test)
+    #evaluate(model=model, test_images=x_test, test_true_boxes=y_test)
 
     if model is None:
         print("--- Модель не найдена ---")
