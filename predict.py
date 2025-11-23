@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from learning_yolo import yolo_loss
+from learning_cnn import focal_loss
 from prepare_yolo import num_anchors, grid_size
 from classes import id_classes, img_size, confidence_thresholds
 
@@ -19,7 +20,7 @@ def load_models():
         return None
 
     try:
-        models['cnn'] = tf.keras.models.load_model('cnn_model.keras')
+        models['cnn'] = tf.keras.models.load_model('cnn_model.keras', custom_objects={'yolo_loss': focal_loss})
         print("Модель CNN загружена")
     except Exception as e:
         print(f"Модель CNN не загружена: {e}")
