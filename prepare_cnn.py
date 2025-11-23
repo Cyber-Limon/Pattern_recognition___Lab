@@ -138,13 +138,14 @@ def load_classification_dataset(batch_size):
     return train_generator, validation_generator, test_generator
 
 
-def check_dataset_stats():
+def check_dataset_aircraft():
     if not os.path.exists('aircraft'):
         print("--- Датасет самолетов не создан ---")
-        return False
+        return False, None
 
     print("\n--- Датасет самолетов ---")
 
+    class_counts = {}
     for split in ['train', 'test']:
         split_path = os.path.join('aircraft', split)
         total_images = 0
@@ -154,9 +155,14 @@ def check_dataset_stats():
             class_path = os.path.join(split_path, class_name)
             if os.path.isdir(class_path):
                 count = len([f for f in os.listdir(class_path) if f.endswith('.jpg')])
-                print(f"  {class_name}: {count} изображений")
+                print(f"{class_name}: {count} изображений")
                 total_images += count
+
+                if class_name not in class_counts:
+                    class_counts[class_name] = 0
+
+                class_counts[class_name] += count
 
         print(f"Всего в {split}: {total_images} изображений")
 
-    return True
+    return True, class_counts

@@ -13,11 +13,9 @@ def download_dataset():
 
 
 def check_dataset():
-    dataset_path = 'dataset'
-
-    folders = [os.path.join(dataset_path, 'JPEGImages'),
-               os.path.join(dataset_path, 'Annotations'),
-               os.path.join(dataset_path, 'ImageSets', 'Main')]
+    folders = [os.path.join('dataset', 'JPEGImages'),
+               os.path.join('dataset', 'Annotations'),
+               os.path.join('dataset', 'ImageSets', 'Main')]
 
     for folder in folders:
         if not os.path.exists(folder):
