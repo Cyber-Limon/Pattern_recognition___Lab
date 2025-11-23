@@ -1,5 +1,5 @@
-from classes import img_size, confidence_thresholds
 from prepare_yolo import grid_size, num_anchors
+from classes import img_size, confidence_thresholds
 
 
 def calculate_iou(box1, box2):

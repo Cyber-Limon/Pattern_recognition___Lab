@@ -129,10 +129,10 @@ def draw_detections(image, detections, confidence):
 
         if final_confidence > 0.7:
             color = (0, 255, 0)
-        elif final_confidence > 0.4:
-            color = (0, 255, 255)
+        elif final_confidence > 0.5:
+            color = (255, 255, 0)
         else:
-            color = (0, 0, 255)
+            color = (255, 0, 0)
 
         cv2.rectangle(image_with_boxes, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
 
@@ -152,19 +152,10 @@ def draw_detections(image, detections, confidence):
 
 
 def show_results(image, detections, confidence):
-    plt.figure(figsize=(12, 10))
+    plt.figure(figsize=(10, 8))
     plt.imshow(image)
 
     valid_detections = [d for d in detections if d['final_confidence'] >= confidence]
-
-    title = f"Детекция и классификация самолетов\n"
-    title += f"Порог уверенности: {confidence}\n"
-    title += f"Найдено самолетов: {len(valid_detections)}"
-
-    plt.title(title, fontsize=14, pad=20)
-    plt.axis('off')
-    plt.tight_layout()
-    plt.show()
 
     if valid_detections:
         print(f"\nНайдено самолетов: {len(valid_detections)}")
@@ -175,6 +166,15 @@ def show_results(image, detections, confidence):
                   f"Итог: {det['final_confidence']:.3f}")
     else:
         print("Самолеты не обнаружены")
+
+    title = f"Детекция и классификация самолетов\n"
+    title += f"Порог уверенности: {confidence}\n"
+    title += f"Найдено самолетов: {len(valid_detections)}"
+
+    plt.title(title, fontsize=14, pad=20)
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()
 
 
 def image_processing(models, image_path, confidence):

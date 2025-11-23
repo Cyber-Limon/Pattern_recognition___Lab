@@ -2,6 +2,7 @@ import tensorflow as tf
 from YOLO import yolo
 from evaluate_yolo import evaluate
 from prepare_yolo import num_anchors
+from tensorflow.keras.callbacks import EarlyStopping
 from prepare_yolo import prepare_yolo_dataset, grid_size
 from check_dataset import download_dataset, check_dataset
 
@@ -30,7 +31,7 @@ def yolo_loss(y_true, y_pred):
     obj_conf_loss = tf.reduce_sum(obj_mask * tf.square(true_conf - pred_conf))
     noobj_conf_loss = tf.reduce_sum(noobj_mask * tf.square(true_conf - pred_conf))
 
-    coord_weight = 5.0
+    coord_weight = 10.0
     noobj_weight = 0.5
 
     total_loss = (coord_weight * (xy_loss + wh_loss) + obj_conf_loss + noobj_weight * noobj_conf_loss)
@@ -46,10 +47,15 @@ def main():
 
     (x_train, y_train), (x_test, y_test) = prepare_yolo_dataset()
 
+    early_stopping = EarlyStopping(monitor='val_loss',
+                                   patience=5,
+                                   restore_best_weights=True,
+                                   verbose=1)
+
     model = yolo()
     model.compile(optimizer='adam', loss=yolo_loss)
     model.summary()
-    model.fit(x_train, y_train, batch_size=10, epochs=1, validation_split=0.2)
+    model.fit(x_train, y_train, batch_size=10, epochs=1, validation_split=0.2, callbacks=[early_stopping])
     model.evaluate(x_test, y_test)
     evaluate(model=model, test_images=x_test, test_true_boxes=y_test)
 

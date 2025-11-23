@@ -7,7 +7,8 @@ input_shape = (*img_size, 3)
 
 def cnn():
     model = models.Sequential([
-        layers.Conv2D(32, 3, activation='relu', padding='same', input_shape=input_shape),
+        layers.Input(shape=input_shape),
+        layers.Conv2D(32, 3, activation='relu', padding='same'),
         layers.BatchNormalization(),
         layers.Conv2D(32, 3, activation='relu', padding='same'),
         layers.BatchNormalization(),
