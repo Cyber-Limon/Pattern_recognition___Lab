@@ -1,5 +1,6 @@
-from prepare_yolo import grid_size, num_anchors
+import numpy as np
 from classes import img_size, confidence_thresholds
+from prepare_yolo import grid_size, num_anchors, anchors
 
 
 def calculate_iou(box1, box2):
@@ -23,13 +24,13 @@ def extract_true_boxes(yolo_data):
     for i in range(grid_size[0]):
         for j in range(grid_size[1]):
             for a in range(num_anchors):
-                if yolo_data[i, j, a, 4] == 1:
+                if yolo_data[i, j, a, 4] > confidence_thresholds[1]:
                     x, y, w, h = yolo_data[i, j, a, 0:4]
 
                     x_abs = (x + j) / grid_size[0] * img_size[0]
                     y_abs = (y + i) / grid_size[1] * img_size[1]
-                    w_abs = w * img_size[0]
-                    h_abs = h * img_size[1]
+                    w_abs = anchors[a][0] * np.exp(w) * img_size[0]
+                    h_abs = anchors[a][1] * np.exp(h) * img_size[1]
 
                     x1 = max(0, x_abs - w_abs / 2)
                     y1 = max(0, y_abs - h_abs / 2)
@@ -53,8 +54,8 @@ def extract_pred_boxes(pred_data):
 
                     x_abs = (x + j) / grid_size[0] * img_size[0]
                     y_abs = (y + i) / grid_size[1] * img_size[1]
-                    w_abs = w * img_size[0]
-                    h_abs = h * img_size[1]
+                    w_abs = anchors[a][0] * np.exp(w) * img_size[0]
+                    h_abs = anchors[a][1] * np.exp(h) * img_size[1]
 
                     x1 = max(0, x_abs - w_abs / 2)
                     y1 = max(0, y_abs - h_abs / 2)

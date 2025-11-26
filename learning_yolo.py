@@ -27,12 +27,12 @@ def yolo_loss(y_true, y_pred):
     noobj_mask = 1 - obj_mask
 
     xy_loss = tf.reduce_sum(obj_mask * tf.square(true_xy - pred_xy))
-    wh_loss = tf.reduce_sum(obj_mask * tf.square(tf.sqrt(tf.maximum(true_wh, 1e-8)) - tf.sqrt(tf.maximum(pred_wh, 1e-8))))
+    wh_loss = tf.reduce_sum(obj_mask * tf.square(true_wh - pred_wh))
     obj_conf_loss = tf.reduce_sum(obj_mask * tf.square(true_conf - pred_conf))
     noobj_conf_loss = tf.reduce_sum(noobj_mask * tf.square(true_conf - pred_conf))
 
-    coord_weight = 10.0
-    noobj_weight = 0.5
+    coord_weight = 25.0
+    noobj_weight = 0.25
 
     total_loss = (coord_weight * (xy_loss + wh_loss) + obj_conf_loss + noobj_weight * noobj_conf_loss)
 
@@ -48,7 +48,7 @@ def main():
     (x_train, y_train), (x_test, y_test) = prepare_yolo_dataset()
 
     early_stopping = EarlyStopping(monitor='val_loss',
-                                   patience=5,
+                                   patience=10,
                                    restore_best_weights=True,
                                    verbose=1)
 

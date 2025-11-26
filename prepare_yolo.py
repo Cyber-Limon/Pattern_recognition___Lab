@@ -199,8 +199,13 @@ def build_yolo_target(annotation_path, image_name):
 
             best_anchor_idx = find_best_anchor(width, height)
 
-            target[grid_y, grid_x, best_anchor_idx, 0:4] = [x_center, y_center, width, height]
-            target[grid_y, grid_x, best_anchor_idx, 4] = 1.0
+            x_cell = (x_center * grid_w) - grid_x
+            y_cell = (y_center * grid_h) - grid_y
+
+            t_w = np.log(width / anchors[best_anchor_idx][0])
+            t_h = np.log(height / anchors[best_anchor_idx][1])
+
+            target[grid_y, grid_x, best_anchor_idx, 0:5] = [x_cell, y_cell, t_w, t_h, 1.0]
 
     except Exception as e:
         print(f"Ошибка обработки {xml_path}: {e}")
