@@ -26,7 +26,6 @@ def main():
     def loss(y_true, y_pred):
         return focal_loss(y_true, y_pred, class_alphas)
 
-
     batch_size = 32
     train, val, test = load_classification_dataset(batch_size)
 
@@ -45,3 +44,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
