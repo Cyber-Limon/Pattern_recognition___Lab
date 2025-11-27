@@ -96,6 +96,8 @@ def process_image_rois(image_name, annotation_path, jpegimages_path, split):
 
 
 def load_classification_dataset(batch_size):
+    class_order = list(id_classes.keys())
+
     train_datagen = ImageDataGenerator(rescale=1. / 255,
                                        rotation_range=15,
                                        width_shift_range=0.1,
@@ -113,6 +115,7 @@ def load_classification_dataset(batch_size):
                                                         target_size=img_size,
                                                         batch_size=batch_size,
                                                         class_mode='sparse',
+                                                        classes=class_order,
                                                         subset='training',
                                                         shuffle=True)
 
@@ -120,6 +123,7 @@ def load_classification_dataset(batch_size):
                                                              target_size=img_size,
                                                              batch_size=batch_size,
                                                              class_mode='sparse',
+                                                             classes=class_order,
                                                              subset='validation',
                                                              shuffle=True)
 
@@ -127,6 +131,7 @@ def load_classification_dataset(batch_size):
                                                       target_size=img_size,
                                                       batch_size=batch_size,
                                                       class_mode='sparse',
+                                                      classes=class_order,
                                                       shuffle=False)
 
     print("\n--- Результаты ---")

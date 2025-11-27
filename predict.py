@@ -3,8 +3,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from keras.src.utils.image_dataset_utils import load_image
-
 from learning_yolo import yolo_loss
 from learning_cnn import focal_loss
 from prepare_yolo import num_anchors, grid_size, anchors
